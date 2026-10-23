@@ -1,0 +1,31 @@
+{
+  "title": "Neoheat Local (Experimental)",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Neoheat Local",
+        "description": "Eksperymentalny odczyt lokalny. Podaj adres konwertera. Sprawdzanie moze potrwac 30 sekund.",
+        "data": {
+          "host": "Adres IP lub host",
+          "port": "Port TCP"
+        }
+      },
+      "reconfigure": {
+        "title": "Neoheat Local",
+        "description": "Eksperymentalny odczyt lokalny. Podaj adres konwertera. Sprawdzanie moze potrwac 30 sekund.",
+        "data": {
+          "host": "Adres IP lub host",
+          "port": "Port TCP"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Brak poprawnej telemetrii. Sprawdz adres, port i dostepnosc strumienia.",
+      "invalid_host": "Podaj sam adres, bez http://."
+    },
+    "abort": {
+      "already_configured": "To polaczenie jest juz skonfigurowane.",
+      "reconfigure_successful": "Zmieniono konfiguracje."
+    }
+  }
+}

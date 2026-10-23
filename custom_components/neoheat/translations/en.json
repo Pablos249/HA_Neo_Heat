@@ -1,0 +1,31 @@
+{
+  "title": "Neoheat Local (Experimental)",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Neoheat Local",
+        "description": "Experimental local read-only connection. Enter the converter address. Validation can take 30 seconds.",
+        "data": {
+          "host": "Host or IP address",
+          "port": "TCP port"
+        }
+      },
+      "reconfigure": {
+        "title": "Neoheat Local",
+        "description": "Experimental local read-only connection. Enter the converter address. Validation can take 30 seconds.",
+        "data": {
+          "host": "Host or IP address",
+          "port": "TCP port"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "No valid telemetry. Check the address, port and stream availability.",
+      "invalid_host": "Enter a hostname or IP without a URL scheme."
+    },
+    "abort": {
+      "already_configured": "This endpoint is already configured.",
+      "reconfigure_successful": "Reconfiguration successful."
+    }
+  }
+}

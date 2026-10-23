@@ -1,0 +1,18 @@
+# Local research, never publish.
+/diagnostics/
+/DIAGNOSTYKA.md
+/POROWNANIE.md
+/tools/
+/dist/
+__pycache__/
+*.py[cod]
+.venv/
+.env*
+.pytest_cache/
+.coverage
+.vscode/
+.idea/
+*.pcap*
+*.bin
+*.log
+
