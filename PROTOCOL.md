@@ -24,5 +24,14 @@ does not publish non-finite floats. Definitions in `sensor.py` are offsets
 within frames, not Modbus addresses. Similar or equal observed values cannot
 prove that two fields have been distinguished correctly.
 
-No write protocol is implemented. Readback matching does not establish safe
-write commands, parameter ranges or mode enumeration values.
+## Confirmed Circuit 1 write
+
+A controlled proxy capture observed a 22-byte cloud-to-device command for
+parameter `0x25`, with a float32 little-endian value and the same CRC algorithm.
+Both `30 → 26` and `26 → 30` were followed by matching telemetry and settings
+readback. The integration implements only this parameter and requires matching
+settings readback before reporting success. The device identity bytes are
+learned locally from validated frames and are never logged or published.
+
+Other write parameters, full-frame writes, ranges and mode enumeration values
+remain unverified and are not implemented.

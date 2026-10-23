@@ -9,7 +9,7 @@ from .client import NeoheatClient
 from .const import DOMAIN
 
 LOGGER = logging.getLogger(__name__)
-PLATFORMS = [Platform.SENSOR]
+PLATFORMS = [Platform.SENSOR, Platform.NUMBER]
 
 
 class NeoheatCoordinator(DataUpdateCoordinator):
@@ -42,4 +42,3 @@ async def async_unload_entry(hass, entry):
         await entry.runtime_data.client.close()
         return True
     return False
-

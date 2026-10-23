@@ -1,7 +1,7 @@
 """TCP stream receiver. Never sends application data to the heat pump."""
 import asyncio
 from collections import deque
-from .protocol import FrameDecoder
+from .protocol import FrameDecoder, encode_write
 
 
 class NeoheatClient:
@@ -13,6 +13,8 @@ class NeoheatClient:
         self.decoder = FrameDecoder()
         self.pending = deque()
         self.settings = {}
+        self.telemetry = {}
+        self.lock = asyncio.Lock()
 
     async def close(self):
         writer, self.writer = self.writer, None
@@ -20,6 +22,7 @@ class NeoheatClient:
         self.pending.clear()
         self.decoder = FrameDecoder()
         self.settings = {}
+        self.telemetry = {}
         if writer is not None:
             writer.close()
             try:
@@ -30,6 +33,10 @@ class NeoheatClient:
 
     async def read_snapshot(self):
         """Return next telemetry sample and settings seen on this connection."""
+        async with self.lock:
+            return await self._read_snapshot()
+
+    async def _read_snapshot(self):
         try:
             async with asyncio.timeout(30):
                 if self.reader is None:
@@ -45,8 +52,34 @@ class NeoheatClient:
                         if kind == 2:
                             self.settings = values
                         else:
-                            return {1: values, 2: dict(self.settings)}
+                            self.telemetry = values
+                            return {1: dict(self.telemetry), 2: dict(self.settings)}
         except (OSError, TimeoutError, asyncio.CancelledError):
             await self.close()
             raise
 
+    async def write_circuit1_setpoint(self, value: float):
+        """Write confirmed parameter 0x25 and wait for settings readback."""
+        async with self.lock:
+            if self.writer is None or self.decoder.identity is None:
+                await self._read_snapshot()
+            # Queued frames predate the command and cannot confirm this write.
+            self.pending.clear()
+            self.writer.write(encode_write(self.decoder.identity, 0x25, value))
+            await self.writer.drain()
+            try:
+                async with asyncio.timeout(15):
+                    while True:
+                        chunk = await self.reader.read(8192)
+                        if not chunk:
+                            raise ConnectionError("Stream closed while confirming write")
+                        for kind, values in self.decoder.feed(chunk):
+                            if kind == 1:
+                                self.telemetry = values
+                            else:
+                                self.settings = values
+                                if abs(values.get(163, float("inf")) - value) < 0.01:
+                                    return {1: dict(self.telemetry), 2: dict(self.settings)}
+            except (OSError, TimeoutError, asyncio.CancelledError):
+                await self.close()
+                raise

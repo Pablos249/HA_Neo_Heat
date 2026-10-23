@@ -78,6 +78,16 @@ class ProtocolTests(unittest.TestCase):
         self.assertLessEqual(len(decoder.buffer), 1)
         self.assertEqual(len(decoder.feed(packet())), 1)
 
+    def test_encode_confirmed_write(self):
+        identity = bytes.fromhex("0102030405060708")
+        frame = protocol.encode_write(identity, 0x25, 26.0)
+        self.assertEqual(len(frame), 22)
+        self.assertEqual(frame[:2], b"\x55\xaa")
+        self.assertEqual(frame[2:10], identity)
+        self.assertEqual(frame[14], 0x25)
+        self.assertEqual(struct.unpack_from("<f", frame, 15)[0], 26.0)
+        self.assertEqual(protocol.crc16(frame[2:-3]), int.from_bytes(frame[-3:-1], "little"))
+
 
 class ClientTests(unittest.IsolatedAsyncioTestCase):
     async def test_read_only_and_settings(self):
@@ -115,6 +125,30 @@ class ClientTests(unittest.IsolatedAsyncioTestCase):
             with self.assertRaises(ConnectionError):
                 await receiver.read_snapshot()
             self.assertIsNone(receiver.writer)
+
+    async def test_write_and_readback(self):
+        command_received = asyncio.Future()
+
+        async def serve(reader, writer):
+            writer.write(packet(values={163: 30}))
+            await writer.drain()
+            command = await reader.readexactly(22)
+            command_received.set_result(command)
+            target = struct.unpack_from("<f", command, 15)[0]
+            writer.write(packet(2, {163: target}))
+            await writer.drain()
+            await reader.read()
+            writer.close()
+            await writer.wait_closed()
+
+        async with await asyncio.start_server(serve, '127.0.0.1', 0) as server:
+            receiver = client.NeoheatClient('127.0.0.1', server.sockets[0].getsockname()[1])
+            await receiver.read_snapshot()
+            result = await receiver.write_circuit1_setpoint(26)
+            command = await asyncio.wait_for(command_received, 2)
+            self.assertEqual(command[14], 0x25)
+            self.assertEqual(result[2][163], 26)
+            await receiver.close()
 
 
 if __name__ == '__main__':

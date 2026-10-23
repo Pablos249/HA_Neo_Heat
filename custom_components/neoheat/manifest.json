@@ -1,7 +1,7 @@
 {
   "domain": "neoheat",
   "name": "Neoheat Local (Experimental)",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "codeowners": ["@Pablos249"],
   "config_flow": true,
   "documentation": "https://github.com/Pablos249/HA_Neo_Heat",
