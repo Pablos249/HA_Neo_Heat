@@ -9,7 +9,7 @@ from .client import NeoheatClient
 from .const import DOMAIN
 
 LOGGER = logging.getLogger(__name__)
-PLATFORMS = [Platform.SENSOR, Platform.NUMBER]
+PLATFORMS = [Platform.SENSOR]
 
 
 class NeoheatCoordinator(DataUpdateCoordinator):

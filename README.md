@@ -10,8 +10,9 @@ Independent project, not affiliated with the manufacturer.
 - Temperatures, compressor frequency, fan speeds, current and voltage.
 - Optional diagnostic sensors for raw pump states, versions and target values.
 - UI configuration and reconfiguration, CRC checking, automatic reconnect.
-- No cloud credentials. Confirmed Circuit 1 heating setpoint control.
-- All other fields remain read-only.
+- No cloud credentials. All entities are read-only.
+- Local write control was removed after testing showed that an isolated command
+  can halt local and cloud communication until the heat pump is restarted.
 - Field mapping is empirical. Compatibility with other models is unverified.
 - Protocol tests run without Home Assistant. A real HA installation test is
   still required before calling this release stable.
@@ -44,8 +45,7 @@ unavailable, then recover when a valid stream returns. Settings arrive less
 often and remain unavailable until received; they are cleared on reconnect.
 Uncertain mappings are disabled by default; enable them in the entity registry
 only if useful for your own comparison. No `climate` or `switch` entities are
-provided. Circuit 1 setpoint is the only writable `number` entity. Units for
-raw pressure/opening values are not
+provided. No writable entities are provided. Units for raw pressure/opening values are not
 assumed. Heating/Auto numeric codes are not decoded.
 
 Change the endpoint through the integration's **Reconfigure** menu. Remove the
@@ -78,8 +78,8 @@ See [PROTOCOL.md](PROTOCOL.md) for the observed frame format and limitations.
 W HACS dodaj adres opublikowanego repozytorium jako **Integracja**, pobierz
 Neoheat Local i zrestartuj HA. Następnie dodaj Neoheat przez **Ustawienia →
 Urządzenia i usługi** i wpisz lokalny adres konwertera oraz port. Pierwsza
-wersja jest eksperymentalna. Obsługuje odczyt oraz potwierdzony zapis nastawy
-obiegu 1. Hasło do chmury nie jest potrzebne. Repozytorium:
+wersja jest eksperymentalna i obsługuje wyłącznie odczyt. Hasło do chmury nie
+jest potrzebne. Repozytorium:
 `https://github.com/Pablos249/HA_Neo_Heat`.
 
 License: MIT.

@@ -36,26 +36,11 @@ def decode_frame(frame: bytes) -> tuple[int, dict[int, float]]:
     return kind, values
 
 
-def encode_write(identity: bytes, parameter: int, value: float) -> bytes:
-    """Encode the observed single-parameter write command."""
-    if len(identity) != 8:
-        raise ValueError("Expected an 8-byte device identity")
-    if not 0 <= parameter <= 0xFF or not math.isfinite(value):
-        raise ValueError("Invalid write value")
-    frame = bytearray(b"\x55\xaa" + identity + b"\x01\x07\x00\x05")
-    frame.append(parameter)
-    frame.extend(struct.pack("<f", value))
-    frame.extend(crc16(frame[2:]).to_bytes(2, "little"))
-    frame.append(0x3A)
-    return bytes(frame)
-
-
 class FrameDecoder:
     """Handle fragmented/coalesced TCP chunks and recover from corrupt data."""
 
     def __init__(self):
         self.buffer = bytearray()
-        self.identity = None
 
     def feed(self, chunk: bytes) -> list[tuple[int, dict[int, float]]]:
         self.buffer.extend(chunk)
@@ -80,7 +65,6 @@ class FrameDecoder:
             except ValueError:
                 del self.buffer[:2]
                 continue
-            self.identity = raw[2:10]
             result.append(frame)
             del self.buffer[:size]
         return result

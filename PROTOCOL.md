@@ -24,14 +24,12 @@ does not publish non-finite floats. Definitions in `sensor.py` are offsets
 within frames, not Modbus addresses. Similar or equal observed values cannot
 prove that two fields have been distinguished correctly.
 
-## Confirmed Circuit 1 write
+## Write commands
 
-A controlled proxy capture observed a 22-byte cloud-to-device command for
-parameter `0x25`, with a float32 little-endian value and the same CRC algorithm.
-Both `30 → 26` and `26 → 30` were followed by matching telemetry and settings
-readback. The integration implements only this parameter and requires matching
-settings readback before reporting success. The device identity bytes are
-learned locally from validated frames and are never logged or published.
+A proxy capture showed a 22-byte cloud-to-device command containing parameter
+`0x25` and a float32 little-endian value. Replaying an isolated command locally
+can stop both local and cloud communication until the heat pump is restarted.
+The capture does not reveal the required session, sequencing or bus-arbitration
+rules, so a matching checksum and payload are not sufficient for safe control.
 
-Other write parameters, full-frame writes, ranges and mode enumeration values
-remain unverified and are not implemented.
+This integration is read-only and does not generate or transmit write commands.
