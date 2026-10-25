@@ -2,7 +2,7 @@
 from homeassistant.components.sensor import SensorEntity, SensorDeviceClass, SensorStateClass
 from homeassistant.helpers.entity import DeviceInfo, EntityCategory
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
-from .const import DOMAIN
+from .const import DOMAIN, OPERATING_MODES, decode_operating_mode
 
 # (frame type, byte offset, name, unit, device class, default enabled)
 FIELDS = [
@@ -31,6 +31,7 @@ FIELDS = [
     (1, 159, "Pump P2 raw", None, None, False),
     (1, 163, "Active target temperature", "°C", "temperature", True),
     (1, 167, "Software version", None, None, True),
+    (1, 171, "Operating mode", None, "enum", True),
     (1, 183, "Auxiliary heater runtime", "min", "duration", False),
     (1, 187, "DHW backup heater runtime", "min", "duration", False),
     (1, 191, "Heating backup heater runtime", "min", "duration", False),
@@ -108,6 +109,8 @@ class NeoheatSensor(CoordinatorEntity, SensorEntity):
         self._attr_native_unit_of_measurement = unit
         self._attr_device_class = SensorDeviceClass(device_class) if device_class else None
         self._attr_entity_registry_enabled_default = enabled
+        if device_class == "enum":
+            self._attr_options = list(OPERATING_MODES.values())
         if self.kind == 1 and self.offset in (183, 187, 191):
             self._attr_state_class = SensorStateClass.TOTAL_INCREASING
         elif unit and self.kind == 1 and self.offset != 163:
@@ -126,4 +129,6 @@ class NeoheatSensor(CoordinatorEntity, SensorEntity):
     @property
     def native_value(self):
         value = (self.coordinator.data or {}).get(self.kind, {}).get(self.offset)
+        if value is not None and self.kind == 1 and self.offset == 171:
+            return decode_operating_mode(value)
         return round(value, 2) if value is not None else None

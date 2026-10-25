@@ -32,6 +32,16 @@ class EntityDefinitionTests(unittest.TestCase):
         pumps = literal_assignment(BASE / "binary_sensor.py", "PUMPS")
         self.assertEqual([offset for offset, _ in pumps], [151, 155, 159])
 
+    def test_operating_mode_codes(self):
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("neoheat_const_test", BASE / "const.py")
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        self.assertEqual(module.decode_operating_mode(0), "Stop")
+        self.assertEqual(module.decode_operating_mode(5), "DHW")
+        self.assertEqual(module.decode_operating_mode(10), "Central heating")
+        self.assertIsNone(module.decode_operating_mode(2))
+
 
 if __name__ == "__main__":
     unittest.main()

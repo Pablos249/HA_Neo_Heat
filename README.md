@@ -9,6 +9,7 @@ Independent project, not affiliated with the manufacturer.
 - Local protocol checked against one EKO II 15 installation, HMI firmware 218.
 - Temperatures, compressor frequency, fan speeds, current and voltage.
 - Read-only binary states for circulation pumps P0, P1 and P2.
+- Read-only operating mode: Stop, DHW or central heating.
 - Optional diagnostic sensors for runtimes, settings, heating curves, versions
   and raw configuration states.
 - UI configuration and reconfiguration, CRC checking, automatic reconnect.
@@ -51,6 +52,8 @@ provided. No writable entities are provided. Units for raw pressure/opening valu
 assumed. Heating/Auto numeric codes are not decoded.
 
 Pump P0, P1 and P2 states and compressor frequency are enabled by default.
+Operating mode is enabled by default and is decoded from the observed
+telemetry value at byte offset 171 (cloud mode code multiplied by five).
 Settings and less certain fields are diagnostic entities disabled by default;
 enable selected entities from the Neoheat device page when needed.
 

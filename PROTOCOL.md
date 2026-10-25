@@ -33,3 +33,12 @@ The capture does not reveal the required session, sequencing or bus-arbitration
 rules, so a matching checksum and payload are not sufficient for safe control.
 
 This integration is read-only and does not generate or transmit write commands.
+
+## Operating mode
+
+Across observed stop, DHW and central-heating samples, telemetry byte offset
+171 held `0`, `5` and `10`, respectively. These values match cloud mode codes
+`0`, `1` and `2` multiplied by five. The integration exposes a read-only enum
+for these three values. Other values remain unknown; this mapping is empirical
+for the observed EKO II 15 and has not been verified against a manufacturer
+specification or other models.
