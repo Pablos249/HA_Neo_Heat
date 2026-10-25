@@ -8,7 +8,9 @@ Independent project, not affiliated with the manufacturer.
 
 - Local protocol checked against one EKO II 15 installation, HMI firmware 218.
 - Temperatures, compressor frequency, fan speeds, current and voltage.
-- Optional diagnostic sensors for raw pump states, versions and target values.
+- Read-only binary states for circulation pumps P0, P1 and P2.
+- Optional diagnostic sensors for runtimes, settings, heating curves, versions
+  and raw configuration states.
 - UI configuration and reconfiguration, CRC checking, automatic reconnect.
 - No cloud credentials. All entities are read-only.
 - Local write control was removed after testing showed that an isolated command
@@ -47,6 +49,10 @@ Uncertain mappings are disabled by default; enable them in the entity registry
 only if useful for your own comparison. No `climate` or `switch` entities are
 provided. No writable entities are provided. Units for raw pressure/opening values are not
 assumed. Heating/Auto numeric codes are not decoded.
+
+Pump P0, P1 and P2 states and compressor frequency are enabled by default.
+Settings and less certain fields are diagnostic entities disabled by default;
+enable selected entities from the Neoheat device page when needed.
 
 Change the endpoint through the integration's **Reconfigure** menu. Remove the
 integration in Devices & services to stop its connection. Only one reader per
